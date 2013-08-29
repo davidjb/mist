@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" xmlns:tal="http://xml.zope.org/namespaces/tal">
+  <head>
+    <title>Mist: Keyword Clouds</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="shortcut icon" href="${request.static_url('mist:static/favicon.ico')}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      body {
+        margin-top: 1em;
+        margin-bottom: 1em;
+      }
+      .about {
+        text-align: right;
+      }
+      .footer {
+        text-align: center;
+      }
+      .word-cloud {
+        height: 550px;
+        width: 100%;
+      }
+    </style>
+  </head>
+<body tal:define="duration import:natural.date.duration;">
+  <div class="container">
+
+    <div class="masthead">
+      <div class="pull-right text-right">
+        <p>Developed with love by <a href="http://git.io/djb">@davidjb</a>
+        <br>Fork me on <a href="https://github.com/davidjb/mist">GitHub</a></p>
+      </div>
+      <ul class="nav nav-pills pull-right">
+        <li tal:repeat="tab ('home', 'zombie')"
+        tal:attributes="class 'active' if request.matched_route.name == tab else None"><a href="${request.route_path(tab)}">${tab.title()}</a></li>
+      </ul>
+      <h3 class="muted">Mist: Keyword Cloud</h3>
+    </div>
+
+    <div class="jumbotron">
+      <div class="word-cloud"
+           data-text-scale="10"
+           data-no-rotate-chance="1"
+           data-keywords="${view.keywords_json()}"><!-- --></div>
+    </div>
+
+    <hr>
+
+    <div class="row-fluid">
+      <div class="span4">
+        <h2>Top Tweeters</h2>
+        <ul>
+          <li tal:repeat="(source, count) view.top_people('twitter')"><a href="http://twitter.com/${source.id}">@${source.id}</a> (${count} tweets)</li>
+        </ul>
+      </div>
+      <div class="span4">
+        <h2>Top Texters</h2>
+        <ul>
+          <li tal:repeat="(source, count) view.top_people('sms')">${source.id} (${count} texts)</li>
+        </ul>
+      </div>
+      <div class="span4">
+        <h2>Live</h2>
+        <ul>
+          <li tal:repeat="message view.latest_messages()">
+             <span class="muted pull-right">${duration(message.entry_datetime)}</span>
+              ${message.source_id}: ${message.text}
+          </li> 
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="row-fluid">
+        <div class="span6">
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>

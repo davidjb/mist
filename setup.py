@@ -3,7 +3,7 @@ import os
 from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
-README = open(os.path.join(here, 'README.txt')).read()
+README = open(os.path.join(here, 'README.rst')).read()
 CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
 requires = [
@@ -12,10 +12,13 @@ requires = [
     'transaction',
     'pyramid_tm',
     'pyramid_fanstatic',
+    'js.jquery',
     'js.d3_cloud',
     'js.bootstrap',
     'zope.sqlalchemy',
     'waitress',
+    'zombie-translator',
+    'natural',
     ]
 
 setup(name='mist',
@@ -45,5 +48,7 @@ setup(name='mist',
       main = mist:main
       [console_scripts]
       initialize_mist_db = mist.scripts.initializedb:main
+      [fanstatic.libraries]
+      mist = mist.views:library
       """,
       )

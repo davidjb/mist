@@ -9,11 +9,7 @@ from pyramid.paster import (
     setup_logging,
     )
 
-from ..models import (
-    DBSession,
-    MyModel,
-    Base,
-    )
+from mist.models import *
 
 
 def usage(argv):
@@ -32,6 +28,3 @@ def main(argv=sys.argv):
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
-    with transaction.manager:
-        model = MyModel(name='one', value=1)
-        DBSession.add(model)
