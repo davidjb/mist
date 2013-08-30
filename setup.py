@@ -20,6 +20,7 @@ requires = [
     'zombie-translator',
     'natural',
     'telstra.mobile',
+    'nltk',
     ]
 
 setup(name='mist',
@@ -52,6 +53,7 @@ setup(name='mist',
       [console_scripts]
       initialize_mist_db = mist.scripts.initializedb:main
       run_sms_listener = mist.scripts.sms_listener:main
+      run_twitter_listener = mist.scripts.twitter_listener:main
 
       [fanstatic.libraries]
       mist = mist.views:library

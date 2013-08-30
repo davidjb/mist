@@ -76,6 +76,26 @@ class Message(Base):
         self.source = source
 
 
+from nltk import clean_html
+from mist.config import WORD_TOKENIZER, STOP_WORDS, PROFANITY
+
+def process_text(text):
+    """ Process incoming text into individual tokens.
+    """
+    lowercase = text.lower()
+    clean_text = clean_html(lowercase)
+    if len(text) != len(clean_text):
+        raise ValueError('HTML detected in incoming message.')
+
+    tokens = WORD_TOKENIZER.tokenize(clean_text)
+    clean_tokens = [t for t in tokens if t not in PROFANITY]
+
+    if len(tokens) != len(clean_tokens):
+        raise ValueError('Profanity detected in incoming message.')
+
+    return [t for t in tokens if t not in STOP_WORDS]
+
+
 def handle_message(text, source_id, source_type):
     """ Handle any sort of incoming message.
 
@@ -97,23 +117,21 @@ def handle_message(text, source_id, source_type):
                                                                      text))
         return
 
-    #Add message to the database
-    message = Message(text, source)
-    DBSession.add(message)
-
-    #Add keywords to the database
-    #XXX Filter here
-    #Bleach for HTML and script filtering
-    clean_text = text
-    if text != clean_text:
+    #Process the text and clean into tokens
+    try:
+        keywords = process_text(text)
+    except ValueError:
+        #Abort processing if any poor form happens
         source.ignored = True
         logging.info('Profanity detected from %s: %r' % (source_id,
                                                          text))
         return
 
-    keywords = text.split()
-    #if profanity_detected(text):
+    #Add message to the database
+    message = Message(text, source)
+    DBSession.add(message)
 
+    #Add keywords to the database
     for keyword_text in keywords:
         keyword = DBSession.query(Keyword).filter(Keyword.keyword == keyword_text).first()
         if not keyword:

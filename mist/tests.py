@@ -35,6 +35,11 @@ class TestSmsReception(BaseTest):
         self.assertEqual(source.id, '0123456789')
         self.assertEqual(source.type, 'sms')
 
+class TestTwitterReception(BaseTest):
+
+    def test_twitter_handler(self):
+        from mist.scripts import twitter_listener
+        pass
 
 class TestSources(BaseTest):
 
@@ -52,4 +57,19 @@ class TestSources(BaseTest):
         handle_message('This is a nasty message.', '@davidjb_', 'twitter')
         messages = DBSession.query(Message).all()
         self.assertEqual(len(messages), 1)
+
+    def test_profanity(self):
+        handle_message('This is a shit message.', '@davidjb_', 'twitter')
+        messages = DBSession.query(Message).all()
+        self.assertEqual(len(messages), 0)
+        source = DBSession.query(Source).one()
+        self.assertTrue(source.ignored)
+
+    def test_html(self):
+        handle_message('<html>foobar</html>', '@davidjb_', 'twitter')
+        messages = DBSession.query(Message).all()
+        self.assertEqual(len(messages), 0)
+        source = DBSession.query(Source).one()
+        self.assertTrue(source.ignored)
+
 
