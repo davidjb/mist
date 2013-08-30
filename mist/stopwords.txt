@@ -1,4 +1,7 @@
 rt
+http
+https
+ftp
 a
 a's
 able
