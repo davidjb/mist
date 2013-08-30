@@ -7,21 +7,33 @@ README = open(os.path.join(here, 'README.rst')).read()
 CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
 requires = [
+    'waitress',
     'pyramid',
+    'zope.sqlalchemy',
     'SQLAlchemy',
     'transaction',
     'pyramid_tm',
+
+    # Resources and theming
     'pyramid_fanstatic',
     'js.jquery',
     'js.d3_cloud',
     'js.bootstrap',
-    'zope.sqlalchemy',
-    'waitress',
-    'zombie-translator',
+
+    # Human Data display
     'natural',
-    'telstra.mobile',
+
+    # Language tokenisation
     'nltk',
+
+    # Twitter streaming
     'twython',
+
+    # GSM integration
+    'telstra.mobile',
+
+    # Fun ;)
+    'zombie-translator',
     ]
 
 setup(name='mist',
