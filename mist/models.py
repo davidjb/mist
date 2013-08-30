@@ -1,5 +1,6 @@
 from datetime import datetime
 import logging
+import transaction
 from sqlalchemy import (
     Column,
     Integer,
@@ -84,9 +85,6 @@ def process_text(text):
     """
     lowercase = text.lower()
     clean_text = clean_html(lowercase)
-    if len(text) != len(clean_text):
-        raise ValueError('HTML detected in incoming message.')
-
     tokens = WORD_TOKENIZER.tokenize(clean_text)
     clean_tokens = [t for t in tokens if t not in PROFANITY]
 
@@ -141,3 +139,4 @@ def handle_message(text, source_id, source_type):
 
     logging.info('Received new message from %s containing: %r' % (source_id,
                                                                   text))
+    transaction.commit()

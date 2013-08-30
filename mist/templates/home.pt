@@ -3,7 +3,7 @@
   <head>
     <title>Mist: Keyword Clouds</title>
     <!-- This is a hack -->
-    <meta http-equiv="refresh" content="5">
+    <meta http-equiv="refresh" content="10" tal:condition="not no_refresh">
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <link rel="shortcut icon" href="${request.static_url('mist:static/favicon.ico')}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,9 +14,6 @@
       }
       .about {
         text-align: right;
-      }
-      .footer {
-        text-align: center;
       }
     </style>
   </head>
@@ -31,6 +28,7 @@
       <ul class="nav nav-pills pull-right">
         <li tal:repeat="tab ('home', 'zombie')"
         tal:attributes="class 'active' if request.matched_route.name == tab else None"><a href="${request.route_path(tab)}">${tab.title()}</a></li>
+        <li><a href="${request.current_route_path(_query={'norefresh': ''})}">Don't refresh</a></li>
       </ul>
       <h3 class="muted">Mist: Keyword Cloud</h3>
     </div>
@@ -38,7 +36,7 @@
     <div class="jumbotron">
       <style>
         .word-cloud {
-          height: 550px;
+          height: 500px;
           width: 100%;
         }
         .word-cloud text {
@@ -51,31 +49,41 @@
       </style>
 
       <div class="word-cloud"
-           data-text-scale="30"
+           data-text-scale="100"
            data-fill="size"
+           data-colour="blue"
+           data-spiral="rectangular"
            data-font="Impact, sans-serif"
            data-no-rotate-chance="0.5"
            data-keywords="${view.keywords_json()}"><!-- --></div>
     </div>
 
     <hr>
+    <p class="text-center">SMS to <span class="btn btn-success">04xx xxx xxx</span> or tweet on Twitter with <span class="btn btn-info">#jcuopenday</span>!</p>
+    <hr>
 
     <div class="row-fluid">
       <div class="span4">
         <h2>Top Tweeters</h2>
         <ul>
-          <li tal:repeat="(source, count) view.top_people('twitter')"><a href="http://twitter.com/${source.id}">@${source.id}</a> (${count} tweets)</li>
+          <li tal:repeat="(source, count) view.top_people('twitter')"><a href="http://twitter.com/${source.id}">@${source.id}</a> (${count} tweet${count != 1 and 's'})</li>
+        </ul>
+
+        <h2>Statistics</h2>
+        <ul>
+          <li>Total messages: ${counts['messages']}</li>
+          <li>Total participants: ${counts['sources']}</li>
         </ul>
       </div>
       <div class="span4">
         <h2>Top Texters</h2>
         <ul>
-          <li tal:repeat="(source, count) view.top_people('sms')">${source.id} (${count} texts)</li>
+          <li tal:repeat="(source, count) view.top_people('sms')">${source.id} (${count} text${count != 1 and 's'})</li>
         </ul>
       </div>
       <div class="span4">
         <h2>Live</h2>
-          <blockquote tal:repeat="message view.latest_messages()">
+          <blockquote tal:repeat="message view.latest_messages()" metal:define-macro="latest-messages">
              <span class="muted pull-right">${duration(message.entry_datetime)}</span>
              ${message.text} <small>${message.source.id}</small> 
           </blockquote> 

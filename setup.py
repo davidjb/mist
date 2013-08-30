@@ -21,6 +21,7 @@ requires = [
     'natural',
     'telstra.mobile',
     'nltk',
+    'twython',
     ]
 
 setup(name='mist',

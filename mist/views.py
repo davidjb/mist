@@ -34,10 +34,13 @@ class HomeView(object):
     def __call__(self):
         bootstrap.need()
         word_cloud_js.need()
-        return {}
+        return {'counts': {'messages': self.dbsession.query(Message).count(),
+                           'sources': self.dbsession.query(Source).count()},
+                'no_refresh': 'norefresh' in self.request.GET
+                }
 
     def keywords(self, maximum=200):
-        keywords = self.dbsession.query(Keyword)[:maximum]
+        keywords = self.dbsession.query(Keyword).order_by(Keyword.count.desc())[:maximum]
         for keyword in keywords:
             yield {'text': keyword.keyword,
                    'size': float(keyword.count)}
@@ -50,10 +53,10 @@ class HomeView(object):
                 .join(Message) \
                 .group_by(Source) \
                 .filter(Source.type == type) \
-                .order_by(desc('count'))[:5]
+                .order_by(desc('count'))[:10]
 
     def latest_messages(self):
-        return self.dbsession.query(Message).order_by(Message.entry_datetime.desc())[:5]
+        return self.dbsession.query(Message).order_by(Message.entry_datetime.desc())[:10]
 
 
 @view_config(route_name='zombie', renderer='templates/home.pt')
