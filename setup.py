@@ -19,6 +19,7 @@ requires = [
     'waitress',
     'zombie-translator',
     'natural',
+    'telstra.mobile',
     ]
 
 setup(name='mist',
@@ -42,12 +43,16 @@ setup(name='mist',
       install_requires=requires,
       extras_require={
           'dev': ['ipdb', 'pyramid_debugtoolbar'],
+          'test': ['nose'],
       },
       entry_points="""\
       [paste.app_factory]
       main = mist:main
+
       [console_scripts]
       initialize_mist_db = mist.scripts.initializedb:main
+      run_sms_listener = mist.scripts.sms_listener:main
+
       [fanstatic.libraries]
       mist = mist.views:library
       """,

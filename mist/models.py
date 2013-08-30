@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 from sqlalchemy import (
     Column,
     Integer,
@@ -21,7 +22,8 @@ from sqlalchemy.orm import (
 from zope.sqlalchemy import ZopeTransactionExtension
 
 
-__all__ = ['DBSession', 'Base', 'Keyword', 'Source', 'Message']
+__all__ = ['DBSession', 'Base', 'Keyword', 'Source', 'Message', 'handle_message']
+logger = logging.getLogger(__name__)
 
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
@@ -75,6 +77,14 @@ class Message(Base):
 
 
 def handle_message(text, source_id, source_type):
+    """ Handle any sort of incoming message.
+
+    :param text: The message text
+    :param source_id: The unique identifier of the source
+       such as phone number or Twitter user ID.
+    :param source_type: Type of source this message comes from
+       - such as 'sms' or 'twitter'
+    """
 
     #Create or obtain the source for the message
     source = DBSession.query(Source).filter(Source.id == source_id).first()
@@ -82,16 +92,27 @@ def handle_message(text, source_id, source_type):
         source = Source(source_id, source_type, ignored=False)
         DBSession.add(source)
 
+    if source.ignored:
+        logging.info('Ignored new message from %s containing: %r' % (source_id,
+                                                                     text))
+        return
+
     #Add message to the database
     message = Message(text, source)
     DBSession.add(message)
 
     #Add keywords to the database
     #XXX Filter here
+    #Bleach for HTML and script filtering
+    clean_text = text
+    if text != clean_text:
+        source.ignored = True
+        logging.info('Profanity detected from %s: %r' % (source_id,
+                                                         text))
+        return
+
     keywords = text.split()
     #if profanity_detected(text):
-    #source.ignored = True
-    #pass
 
     for keyword_text in keywords:
         keyword = DBSession.query(Keyword).filter(Keyword.keyword == keyword_text).first()
@@ -99,3 +120,6 @@ def handle_message(text, source_id, source_type):
             keyword = Keyword(keyword_text)
             DBSession.add(keyword)
         keyword.count += 1
+
+    logging.info('Received new message from %s containing: %r' % (source_id,
+                                                                  text))

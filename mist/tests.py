@@ -3,31 +3,53 @@ import transaction
 
 from pyramid import testing
 
-from .models import DBSession
+from mist.models import *
 
-
-class TestMyView(unittest.TestCase):
+class BaseTest(unittest.TestCase):
     def setUp(self):
-        self.config = testing.setUp()
         from sqlalchemy import create_engine
+        from mist.models import Base
+
+        self.config = testing.setUp()
         engine = create_engine('sqlite://')
-        from .models import (
-            Base,
-            MyModel,
-            )
         DBSession.configure(bind=engine)
         Base.metadata.create_all(engine)
-        with transaction.manager:
-            model = MyModel(name='one', value=55)
-            DBSession.add(model)
 
     def tearDown(self):
         DBSession.remove()
         testing.tearDown()
 
-    def test_it(self):
-        from .views import my_view
-        request = testing.DummyRequest()
-        info = my_view(request)
-        self.assertEqual(info['one'].name, 'one')
-        self.assertEqual(info['project'], 'mist')
+
+class TestSmsReception(BaseTest):
+
+    def test_sms_handler(self):
+        from mist.scripts import sms_listener
+        from gsmmodem import modem
+        sms = modem.Sms('+61123456789', 'My other cat is a dog.')
+        sms_listener.handleSms(sms)
+
+        message = DBSession.query(Message).one()
+        self.assertEqual(message.text, 'My other cat is a dog.')
+
+        source = DBSession.query(Source).one()
+        self.assertEqual(source.id, '0123456789')
+        self.assertEqual(source.type, 'sms')
+
+
+class TestSources(BaseTest):
+
+    def test_source(self):
+        handle_message('Test', '@davidjb_', 'twitter')
+        source = DBSession.query(Source).one()
+        self.assertEqual(source.id, '@davidjb_')
+        self.assertEqual(source.type, 'twitter')
+
+    def test_ignored_source(self):
+        handle_message('Test', '@davidjb_', 'twitter')
+        source = DBSession.query(Source).one()
+        source.ignored = True
+
+        handle_message('This is a nasty message.', '@davidjb_', 'twitter')
+        messages = DBSession.query(Message).all()
+        self.assertEqual(len(messages), 1)
+

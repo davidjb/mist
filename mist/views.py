@@ -40,7 +40,6 @@ class HomeView(object):
         keywords = self.dbsession.query(Keyword)[:maximum]
         for keyword in keywords:
             yield {'text': keyword.keyword,
-                   'color': 1,
                    'size': float(keyword.count)}
 
     def keywords_json(self):
