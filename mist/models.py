@@ -1,6 +1,5 @@
 from datetime import datetime
 import logging
-import transaction
 from sqlalchemy import (
     Column,
     Integer,
@@ -139,4 +138,3 @@ def handle_message(text, source_id, source_type):
 
     logging.info('Received new message from %s containing: %r' % (source_id,
                                                                   text))
-    transaction.commit()

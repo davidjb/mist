@@ -18,6 +18,7 @@ class TweetStreamer(TwythonStreamer):
                 text = text.replace(ignore, '')
             screen_name = data['user']['screen_name']
             handle_message(text, screen_name, 'twitter')
+            transaction.commit()
 
     def on_error(self, status_code, data):
         print(status_code)

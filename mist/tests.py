@@ -65,11 +65,4 @@ class TestSources(BaseTest):
         source = DBSession.query(Source).one()
         self.assertTrue(source.ignored)
 
-    def test_html(self):
-        handle_message('<html>foobar</html>', '@davidjb_', 'twitter')
-        messages = DBSession.query(Message).all()
-        self.assertEqual(len(messages), 0)
-        source = DBSession.query(Source).one()
-        self.assertTrue(source.ignored)
-
 
