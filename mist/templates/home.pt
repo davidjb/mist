@@ -64,18 +64,21 @@
 
     <div class="row-fluid">
       <div class="span4">
-        <h2>Top Tweeters</h2>
-        <ul>
-          <li tal:repeat="(source, count) view.top_people('twitter')"><a href="http://twitter.com/${source.id}">@${source.id}</a> (${count} tweet${count != 1 and 's'})</li>
-        </ul>
-
         <h2>Statistics</h2>
         <ul>
           <li>Total messages: ${counts['messages']}</li>
           <li>Total participants: ${counts['sources']}</li>
         </ul>
+        <h2>Top Keywords</h2>
+        <ul>
+          <li tal:repeat="keyword view.top_keywords()">${keyword.keyword} (${keyword.count} appearance${keyword.count != 1 and 's'})</li>
+        </ul>
       </div>
       <div class="span4">
+        <h2>Top Tweeters</h2>
+        <ul>
+          <li tal:repeat="(source, count) view.top_people('twitter')"><a href="http://twitter.com/${source.id}">@${source.id}</a> (${count} tweet${count != 1 and 's'})</li>
+        </ul>
         <h2>Top Texters</h2>
         <ul>
           <li tal:repeat="(source, count) view.top_people('sms')">${source.id} (${count} text${count != 1 and 's'})</li>

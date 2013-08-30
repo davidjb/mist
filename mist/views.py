@@ -40,7 +40,7 @@ class HomeView(object):
                 }
 
     def keywords(self, maximum=200):
-        keywords = self.dbsession.query(Keyword).order_by(Keyword.count.desc())[:maximum]
+        keywords = self.top_keywords(maximum)
         for keyword in keywords:
             yield {'text': keyword.keyword,
                    'size': float(keyword.count)}
@@ -54,6 +54,9 @@ class HomeView(object):
                 .group_by(Source) \
                 .filter(Source.type == type) \
                 .order_by(desc('count'))[:10]
+
+    def top_keywords(self, maximum=10):
+        return self.dbsession.query(Keyword).order_by(Keyword.count.desc())[:maximum]
 
     def latest_messages(self):
         return self.dbsession.query(Message).order_by(Message.entry_datetime.desc())[:10]
