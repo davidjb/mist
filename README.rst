@@ -10,11 +10,6 @@ This is a Pyramid-based project that creates live tag clouds using the
 `d3-cloud <https://github.com/jasondavies/d3-cloud>`_ library from various
 data sources.
 
-Technologies used
------------------
-
-
-
 Getting Started
 ---------------
 
@@ -53,3 +48,50 @@ in some fashion (``screen``, ``cu``, etc).  Then, run the listener:
 .. code:: bash
 
     ./bin/run_sms_listener --help
+
+Technologies used
+-----------------
+
+waitress
+    For basic web serving
+    
+pyramid
+    The Python web framework. Not built by aliens.
+    
+SQLAlchemy
+    Used for Object Relational Mapping (ORM) with database storage.
+    
+transaction
+    Transactional support for the application.
+    
+pyramid_tm
+    Transactions for web requests in Pyramid.
+    
+    
+Fanstatic
+    Easy static resource serving for Python web frameworks. Easily
+    depend on JavaScript and CSS libraries from your Python egg, and include
+    them on any given page using ``my_library.need()``.
+pyramid_fanstatic
+    Integration of Fanstatic with Pyramid. Allows ini-based
+    configuration for Fanstatic options.
+js.jquery
+    jQuery for Fanstatic.
+js.d3_cloud
+    D3-based word cloud library for Fanstatic. Works like http://wordle.net. 
+js.bootstrap
+    Twitter bootrap resources for Fanstatic.
+
+natural
+    Human Data display of dates (eg ``1 hour ago``)
+nltk
+    Language tokenisation and filtering
+twython
+    Twitter streaming of data via its API
+python-gsmmodem
+    Library for managing cellular modems. Allows SMS callbacks in Python!
+telstra.mobile
+    Auto-detection of modem for ``python-gsmmodem``. May be integrate
+
+zombie-translator
+    For fun. Translates all words in word-cloud into zombie speak.
